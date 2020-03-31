@@ -55,7 +55,8 @@ namespace :seed_turkey_v02b do
         max_grade: 12
       )
     end
-    Translation.find_or_update_translation(@loc_en.code, 'subject.tfv.tech', 'Tech Engineering')
+    Translation.find_or_update_translation(@loc_en.code, 'subject.tfv.tech.name', 'Tech Engineering')
+    Translation.find_or_update_translation(@loc_en.code, 'subject.tfv.tech.abbr', 'tech')
     Translation.find_or_update_translation(@loc_en.code, 'subject.base.tech.name', 'Tech Engineering')
     Translation.find_or_update_translation(@loc_en.code, 'subject.base.tech.abbr', 'tech')
 
