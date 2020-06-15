@@ -62,7 +62,7 @@ namespace :seed_turkey_v02 do
       # [item] - grid column, may have multiple connected items
       # {item} - grid column, single item
       grid_headers: 'grade,unit,subunit,comp,[essq],[bigidea],[pract],{explain},[miscon]',
-      dim_display: 'miscon#0#1#2#3#4#5#6#7',
+      dim_display: 'miscon#0#8#1#2#3#4#5#6#7',
     }
     if myTreeTypes.count < 1
       TreeType.create(myTreeTypeValues)
@@ -326,7 +326,7 @@ namespace :seed_turkey_v02 do
     ]
 
     dim_resource_types_arr = [
-      ['Second Subject', 'İkinci Konu'],
+      ['Second Category', 'İkinci Kategori'],
       ['Correct Understanding', 'Doğru Anlama'],
       ['Possible Source of Misconception', 'Yanlış Anlaşmanın Olası Kaynağı'],
       ['Compiler/Source'],
@@ -334,6 +334,7 @@ namespace :seed_turkey_v02 do
       ['Website Link References', 'Web Sitesi Bağlantı Referansları'],
       ['Test Distractor Percent', 'Test Distraktör Yüzdesi'],
       ['Link to Question Item Bank', 'Soru Bağlantısı Bankası'],
+      ['Third Category', 'Üçüncü Kategori'],
     ]
     dim_translations_arr.each do |dim|
       dim_name_key = Dimension.get_dim_type_key(

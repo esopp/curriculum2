@@ -21,6 +21,7 @@ class Dimension < BaseRec
     'link',
     'distractor',
     'question_bank',
+    'third_subj',
   ]
 
   validate :valid_dim_type
