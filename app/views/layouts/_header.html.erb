@@ -149,13 +149,6 @@
           <li class="nav-item" role='menuitem'>
             <a class="nav-link btn btn-primary" href=<%= sectors_path %>><%= @sectorName %></a>
           </li>
-          <li class="nav-item active" role='menuitem'>
-          <a class="nav-link btn btn-primary" href="#">
-            <%= translate('nav_bar.concepts.name') %></a>
-          </li>
-          <li class="nav-item" role='menuitem'>
-          <a class="nav-link btn btn-primary" href="#"><%= translate('nav_bar.standards.name') %></a>
-          </li>
         </ul>
     </li>
     <% if current_user.present? && current_user.is_admin?
