@@ -30,6 +30,12 @@ class Ability
     #
     # See the wiki for details:
     # https://github.com/CanCanCommunity/cancancan/wiki/Defining-Abilities
+    #
+    # TO DO:
+    #  - Define permissions for editing Tree at depth n vs. outcome depth
+    #  - Check if user is subject admin for items
+    #  - Define permissions for editing dimensions
+    #  -Define permissions for editing Translations
     if user.is_admin?
       can :manage, :all
     elsif user.is_teacher? || user.is_counselor? || user.is_supervisor?

@@ -51,7 +51,7 @@ class BaseRec < ActiveRecord::Base
     'adv', #advisory
     'ara', #Arabic
     'art', #Art
-    'soc',
+    'soc', #Social Science
   ]
   SUBJECT_COLORS = [
     '#E5FFDE',
@@ -69,7 +69,8 @@ class BaseRec < ActiveRecord::Base
     '#9DC5BB',
     '#414535',
     '#EDD2E0',
-    '#6F9CEB'
+    '#6F9CEB',
+    '#D1F58C',
   ]
 
   # BASE_PRACTICES = [

@@ -1,17 +1,54 @@
+<!--
+  Generic Table, can be used to build expandable header tables (set expandable to true), or tables as part of the main section of the detail page.
+    locals:
+      table: {
+        expandable : Boolean,
+        code: Integer,
+        depth: nil || Integer,
+        num_rows: Integer,
+        by_resource_code: {
+          resourceCode1 : {
+            label_transl_key: str,
+            content_array : [
+              {
+                rec: rec,
+                label_key: nil,
+                transl_key: str,
+                detail_href: nil || path
+                edit: nil || { path, options: {} },
+                delete: nil || { path, options: {} },
+              },
+              {...}
+            ],
+            add: nil || {path, options: {}},
+          }
+        }
+            - shuffle contents_array into left-to-right order while building data.
+            e.g., if col_nums = 3, we alternate content types (each type has its own column) in the content_array:
+            [{type1 item}, {type2 item}, {type3 item}, {type1 item}, {...}, ...]
+      }
+-->
 <!-- Supporting Resources Table -->
+<% resource_codes = table[:content_array].map { |e| e[:rec][:resource_code]  } %>
 <div class='row teacher-label top-label'>
   <div class='col col-lg-12'>
     <%= I18n.t('trees.labels.teacher_header') %>
-    <%= link_to(fa_icon("gear"), edit_tree_path(@tree.id, tree: {edit_type: "ref_settings##{resource_codes.join('#')}"}), {:class => "fa-lg", :remote => true, 'data-toggle' =>  "modal", 'data-target' => '#modal_popup'}) if @editMe && can_edit_type?('resource_titles') %>
+    <%= link_to(fa_icon("gear"), edit_tree_path(@tree.id, tree: {edit_type: "ref_settings##{resource_codes.join('#')}"}), {:class => "fa-lg", :remote => true, 'data-toggle' =>  "modal", 'data-target' => '#modal_popup'}) if @editMe && can? :manage, Translation %>
   </div>
 </div>
 <div class='teacher-grid'>
-<% resource_codes.each do |c| %>
-  <% code = Outcome::RESOURCE_TYPES[c.to_i] %>
-  <%= render partial: "/trees/show/resource", locals: {
-          type_code: code,
-          render_label: true
-        }
-  %>
-<% end %>
+  <% table[:by_resource_code].each do |code, data| %>
+    <div>
+      <div class="teacher-label">
+        <%= @translations[data[:label_transl_key]] %>
+        <%= link_to(fa_icon("plus"), data[:add][:path], data[:add][:options]) if @editMe && can? :create, Resource.new(resource_code: code) %>
+      </div>
+      <% data[:content_array].each do |content| %>
+        <%= render partial: "/trees/show/generic_column_cell", locals: {
+              content: content
+              }
+        %>
+      <% end %>
+    </div>
+  <% end %>
 </div>

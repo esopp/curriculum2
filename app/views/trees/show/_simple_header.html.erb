@@ -1,0 +1,36 @@
+<!--
+	Simple header Table, can be used to build expandable header tables (set expandable to true), or tables as part of the main section of the detail page.
+	  local:
+	    table: {
+		    headers_array: [{  //should only have one entry for partial
+						transl_key: str,
+			    }]
+				content_array: [ //should only have one entry for partial
+					  {
+					    rec: rec,
+			        transl_key: str,
+			        detail_href: nil || path
+			        edit: nil || { path, options: {} },
+			        delete: nil || { path, options: {} },
+					  },
+					  {...}
+					]
+					  - shuffle contents_array into left-to-right order while building data.
+					  e.g., if col_nums = 3, we alternate content types (each type has its own column) in the content_array:
+					  [{type1 item}, {type2 item}, {type3 item}, {type1 item}, {...}, ...]
+			}
+-->
+<%
+  header = table[:headers_array][0]
+  content = table[:content_array][0]
+  user_can_edit = @editMe && can? :manage, content[:rec]
+%>
+<div class="row">
+  <div class='col col-6 text-left'>
+  	<strong>
+  		<%= @translations[content[:label_key]] %>
+  	</strong>
+  	<%= html_safe_translations(@translations[content[:transl_key]]) %>
+  </div>
+  <%= link_to(fa_icon("edit"), content[:edit][:path], content[:edit][:options]) if content[:edit] && user_can_edit %>
+</div>

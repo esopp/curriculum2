@@ -1,12 +1,44 @@
+<!--
+  TreeTree Table, can be used to build expandable header tables (set expandable to true), or tables as part of the main section of the detail page.
+    locals:
+      table: {
+        tree: treeRec,
+        num_rows: Integer,
+        headers_array: [{
+            parent_transl_key: nil || str,
+            transl_key: str,
+            add: nil || {path, options: {}}, //only set for first header
+            class: Class # (for cancan)
+          }]
+        content_array: [ //should be sorted by subject_id of rec
+            {
+              rec: rec, #build this info, don't just pass a record
+              edit: nil || {
+                path: edit_tree_path(@tree.id, tree: { edit_type: 'treetree', attr_id: r[:ttid]}),
+                options: {:remote => true, :class => "fa-lg pull-right", 'data-toggle' =>  "modal", 'data-target' => '#modal_popup'},
+              },
+              delete: {
+                path: tree_path(@tree.id, tree: { edit_type: 'treetree', attr_id: r[:ttid], active: false}, tree_tree: {active: false}),
+                options: {:class => "fa-lg pull-right", 'data-confirm' => I18n.t('app.labels.confirm_deactivate', item: I18n.t("trees.labels.#{subj}") + ": " + r[:code]), method: :patch}
+              }
+            },
+            {...}
+          ]
+            - shuffle contents_array into left-to-right order while building data.
+            e.g., if col_nums = 3, we alternate content types (each type has its own column) in the content_array:
+            [{type1 item}, {type2 item}, {type3 item}, {type1 item}, {...}, ...]
+      }
+-->
+
 <!-- Connections to Other Outcomes Table -->
+<% detail_title = I18n.t('trees.labels.outcome_connections', outcome: @hierarchies[@treeTypeRec[:outcome_depth]].pluralize) %>
 <div class='related-items-table'>
   <div class='row subject-relations center-label-bold top-label'>
     <div class='col col-lg-12'>
       <%= detail_title %>
-        <% if @editMe && can_edit && false %>
-          <a href="#"><span class="pull-right">
-            <i class="fa fa-plus-square fa-lg"></i>
-          </span></a>
+        <% add_action_defs = table[:headers_array][0][:add]
+           if @editMe && can? :manage, TreeTree && add_action_defs %>
+           <%= link_to(fa_icon("plus-square"), add_action_defs[:path], add_action_defs[:options]) %>
         <% end %>
     </div>
   </div>
@@ -44,6 +76,7 @@
   <div class="row">
     <div class='connections-grid'>
       <%
+        tree = table[:tree]
         connectionsFound = 0
         alluvial_nodes = [tree.format_code(@locale_code)]
         alluvial_node_colors = [BaseRec.subject_color(tree.subject.code)]
@@ -58,8 +91,8 @@
         tree_code = tree.format_code(@locale_code)
       %>
       <% if can? :read, TreeTree %>
-        <% @relatedBySubj.each do |subj, rel|%>
-          <% rel.each do |r|
+        <% table[:content_array].each do |content|
+          r = content[:rec]
              connectionsFound += 1
              alluvial_nodes << r[:code]
              alluvial_node_colors << BaseRec.subject_color(r[:subj_code])
@@ -97,13 +130,12 @@
               <% else %>
                 <a href='/<%= @locale_code %>/trees/<%= r[:tid] %>'><%= @translations[r[:tkey]] %></a>
               <% end %>
-              <% if @editMe && can_edit %>
-                <%= link_to(fa_icon("times"), tree_path(@tree.id, tree: { edit_type: 'treetree', attr_id: r[:ttid], active: false}, tree_tree: {active: false}), {:class => "fa-lg pull-right", 'data-confirm' => I18n.t('app.labels.confirm_deactivate', item: I18n.t("trees.labels.#{subj}") + ": " + r[:code]), method: :patch}) if @editMe && can_edit %>
-                <%= link_to(fa_icon("edit"), edit_tree_path(@tree.id, tree: { edit_type: 'treetree', attr_id: r[:ttid]}), {:remote => true, :class => "fa-lg pull-right", 'data-toggle' =>  "modal", 'data-target' => '#modal_popup'}) if @editMe && can_edit %>
+              <% if @editMe && can? :manage, TreeTree %>
+                <%= link_to(fa_icon("times"), content[:delete][:path], content[:delete][:options]) %>
+                <%= link_to(fa_icon("edit"), content[:edit][:path], content[:edit][:options]) %>
               <% end %>
             </div>
-          <% end %>
-        <% end %>
+        <% end # table[:content_array].each do |content| %>
       <% end # if can view type %>
       <% if connectionsFound == 0 %>
           <div class='connections-item rel-sectors'>

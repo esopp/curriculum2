@@ -1,0 +1,38 @@
+
+<!--
+  data structure for this partial:
+  locals:
+    content = {
+        rec: rec,
+        label_key: nil,
+        transl_key: str,
+        detail_href: nil || path
+        edit: nil || { path, options: {} },
+        delete: nil || { path, options: {} },
+      }
+    can_edit
+  session:
+    @editMe
+-->
+<!-- Generic Column Cell -->
+<% if content
+    is_xl_xs_grid = (@editMe && can? :manage, content[:rec])
+%>
+  <div class="dark-border--left <%= is_xl_xs_grid ? "generic-grid generic-grid--xl-xs" : "" %>">
+    <div class="padding-left padding-right padding-top padding-bottom">
+      <% if content[:detail_href] %>
+        <a href="<%= content[:detail_href] %>">
+          <%= html_safe_translations(@translations[content[:transl_key]]) %>
+        </a>
+      <% else %>
+        <%= html_safe_translations(@translations[d.dim_name_key]) %>
+      <% end %>
+    </div><!-- close translation div -->
+    <% if is_xl_xs_grid %>
+      <div class="padding-right padding-top padding-bottom">
+        <%= link_to(fa_icon("edit"), content[:edit][:path], content[:edit][:options]) if content[:edit] %>
+        <%= link_to(fa_icon("times"), content[:delete][:path], content[:delete][:options]) if content[:delete] %>
+      </div><!--close edit/delete div -->
+    <% end %>
+  </div><!-- close outer div-->
+<% end %>
